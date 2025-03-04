@@ -14,7 +14,7 @@ extension PXiCalendar {
         self.properties.append(
           .init(
             name: PXCalendar.prodid.rawValue,
-            value: .text("-//YourCompany//YourApp//EN")
+            value: .text("-//PIXO//PROJECT//KR")
           )
         )
       }
