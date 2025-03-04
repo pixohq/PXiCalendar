@@ -1,6 +1,7 @@
 import Foundation
 
 extension PXiCalendar {
+  
   public enum PXAlarm: String, Sendable {
     // 필수 속성
     /// 알람 동작 유형 (필수)

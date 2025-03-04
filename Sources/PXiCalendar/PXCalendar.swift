@@ -2,9 +2,9 @@ import Foundation
 
 extension PXiCalendar {
 
-  public struct Calendar {
-    public var properties: [Property]
-    public var components: [Component]
+  public struct Calendar: Sendable {
+    private(set) public var properties: [Property]
+    private(set) public var components: [Component]
 
     public init(properties: [Property] = [], components: [Component] = []) {
       self.properties = properties

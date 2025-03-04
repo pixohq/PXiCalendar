@@ -2,7 +2,7 @@ import Foundation
 
 public struct PXiCalendar {
 
-  public struct Property {
+  public struct Property: Sendable {
     public let name: String
     public let value: Value
     public let parameters: [String: String]
@@ -30,10 +30,10 @@ public struct PXiCalendar {
     }
   }
 
-  public struct Component {
+  public struct Component: Sendable {
     public let type: ComponentType
-    public var properties: [Property]
-    public var subComponents: [Component]
+    private(set) public var properties: [Property]
+    private(set) public var subComponents: [Component]
 
     public init(
       type: ComponentType,
@@ -70,7 +70,7 @@ public struct PXiCalendar {
     }
   }
 
-  public enum Value {
+  public enum Value: Sendable {
     case text(String)
     case structuredText(String)
     case date(Date)

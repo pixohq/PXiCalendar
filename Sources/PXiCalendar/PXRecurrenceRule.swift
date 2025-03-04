@@ -2,14 +2,15 @@
 import Foundation
 
 extension PXiCalendar {
-  public enum Recurrence: String {
+
+  public enum Recurrence: String, Sendable {
     case daily = "DAILY"
     case weekly = "WEEKLY"
     case monthly = "MONTHLY"
     case yearly = "YEARLY"
   }
 
-  public enum Weekday: String {
+  public enum Weekday: String, Sendable {
     case sunday = "SU"
     case monday = "MO"
     case tuesday = "TU"
@@ -19,7 +20,7 @@ extension PXiCalendar {
     case saturday = "SA"
   }
 
-  public struct RecurrenceRule {
+  public struct RecurrenceRule: Sendable {
     public let recurrence: Recurrence
     public var interval: Int?
     public var count: Int?
