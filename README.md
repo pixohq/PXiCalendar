@@ -197,3 +197,6 @@ PXiCalendar generates standard iCalendar format files compatible with:
 - Microsoft Outlook
 - Mozilla Thunderbird
 - And most other calendar applications that support the iCalendar (RFC 5545) standard
+
+## License
+PXiCalendar is available under the MIT license. See the LICENSE file for more info.
