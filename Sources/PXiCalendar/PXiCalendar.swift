@@ -72,6 +72,7 @@ public struct PXiCalendar {
 
   public enum Value {
     case text(String)
+    case structuredText(String)
     case date(Date)
     case dateTime(Date)
     case duration(DateComponents)
@@ -86,6 +87,8 @@ public struct PXiCalendar {
           .replacingOccurrences(of: "\n", with: "\\n")
           .replacingOccurrences(of: ";", with: "\\;")
           .replacingOccurrences(of: ",", with: "\\,")
+      case .structuredText(let string):
+        return string
       case .date(let date):
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd"
