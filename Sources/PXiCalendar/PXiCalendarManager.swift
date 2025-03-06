@@ -1,5 +1,6 @@
 import Foundation
 
+@available(iOS 13.0, macOS 10.15, *)
 public actor PXiCalendarManager {
   private let fileManager = FileManager.default
 
