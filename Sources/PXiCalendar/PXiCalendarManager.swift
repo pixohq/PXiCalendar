@@ -2,6 +2,9 @@ import Foundation
 
 public actor PXiCalendarManager {
   private let fileManager = FileManager.default
+
+  public static let shared = PXiCalendarManager()
+
   private init() {}
 
   public func createCalendar(
