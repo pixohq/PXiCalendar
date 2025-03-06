@@ -1,42 +1,202 @@
 # PXiCalendar
+A Swift library for creating and managing iCalendar (RFC 5545) formatted events
 
-# 소개
-PXiCalendar는 Swift로 구현된 iCalendar(RFC 5545) 표준을 기반으로 하는 캘린더 시스템 라이브러리입니다. 이 패키지는 캘린더 이벤트, 알람, 반복 일정 등을 쉽게 생성하고 관리할 수 있는 다양한 구조체와 열거형을 제공합니다.
+## Installation
 
-## 주요 기능
-### 1. 기본 구조
-PXiCalendar는 iCalendar 형식의 핵심 구성 요소를 구현합니다:
+### Swift Package Manager
 
-- Property: 이름, 값, 매개변수를 포함하는 iCalendar 속성
-- Component: 특정 유형(일정, 알람 등)의 컴포넌트와 그 속성들을 관리
-- Value: 텍스트, 날짜, 시간, 기간 등 다양한 값 유형 지원
+PXiCalendar can be installed using Swift Package Manager. Add it to your project by following these steps:
 
-### 2. 캘린더 관리
-PXiCalendar.Calendar 구조체는 전체 캘린더를 관리합니다:
+1. In Xcode, select **File** > **Add Package Dependencies...**
+2. Enter the repository URL: `https://github.com/pixohq/PXiCalendar`
+3. Choose the version or branch you want to use
+4. Click **Add Package**
 
-- 필수 속성(PRODID, VERSION)을 자동으로 설정
-- 캘린더 속성(이름, 설명, 색상 등) 추가 기능
-- 여러 일정 컴포넌트 추가 및 관리 기능
-- iCalendar 형식 문자열로 변환 기능
+Alternatively, you can add it directly to your `Package.swift` file:
 
-### 3. 일정(Event) 관리
-PXEvent 열거형은 일정 관련 속성을 정의합니다:
+```swift
+dependencies: [
+    .package(url: "https://github.com/pixohq/PXiCalendar", .upToNextMajor(from: "1.0.0"))
+],
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: ["PXiCalendar"]),
+]
 
-- 고유 식별자, 시작/종료 시간 등 필수 속성
-- 제목, 설명, 위치 등의 설명 속성
-- 상태, 참석자, 주최자 관련 속성
-- 첨부 파일, 카테고리, URL 등 부가 속성
+```
 
-### 4. 알람 관리
-PXAlarm 열거형은 알림 관련 속성을 제공합니다:
+## Basic Usage
 
-- 알람 동작 유형(표시, 이메일, 오디오, 절차)
-- 알람 트리거 시간 및 반복 설정
-- 알람 설명 및 첨부 파일 관리
+### Creating a Calendar
 
-### 5. 반복 일정 관리
-RecurrenceRule 구조체를 통해 다양한 반복 패턴을 설정할 수 있습니다:
+```swift
+import PXiCalendar
 
-- 일간, 주간, 월간, 연간 반복 패턴
-- 반복 간격, 종료 조건(횟수 또는 날짜)
-- 요일, 날짜, 월 등 세부 반복 규칙 설정
+// Create a new calendar
+var calendar = PXiCalendar.Calendar()
+
+// Add custom properties (optional)
+calendar.add(property: .init(
+    name: PXiCalendar.PXCalendar.name.rawValue,
+    value: .text("My Calendar")
+))
+
+```
+
+### Creating an Event
+
+```swift
+// Create an event component
+var event = PXiCalendar.Component(type: .event)
+
+// Add required properties
+let now = Date()
+event.add(property: .init(
+    name: PXiCalendar.PXEvent.uid.rawValue,
+    value: .text(UUID().uuidString)
+))
+event.add(property: .init(
+    name: PXiCalendar.PXEvent.dtstamp.rawValue,
+    value: .dateTime(now)
+))
+event.add(property: .init(
+    name: PXiCalendar.PXEvent.dtstart.rawValue,
+    value: .dateTime(now),
+    parameters: ["TZID": TimeZone.current.identifier]
+))
+
+// Add event summary and description
+event.add(property: .init(
+    name: PXiCalendar.PXEvent.summary.rawValue,
+    value: .text("Team Meeting")
+))
+event.add(property: .init(
+    name: PXiCalendar.PXEvent.description.rawValue,
+    value: .text("Weekly project status update")
+))
+
+```
+
+### Adding a Recurring Rule
+
+```swift
+// Create a weekly recurring event (every Monday, Wednesday, Friday)
+let weekdays = [PXiCalendar.Weekday.monday, .wednesday, .friday]
+let recurrenceRule = PXiCalendar.RecurrenceRule(
+    recurrence: .weekly,
+    until: Calendar.current.date(byAdding: .month, value: 3, to: Date()),
+    byDay: weekdays
+)
+
+// Add the rule to the event
+event.add(property: .init(
+    name: PXiCalendar.PXEvent.rrule.rawValue,
+    value: .structuredText(recurrenceRule.formatted())
+))
+
+```
+
+### Adding an Alarm
+
+```swift
+// Create an alarm component for 15 minutes before the event
+var alarm = PXiCalendar.Component(type: .alarm)
+
+// Set alarm action type
+alarm.add(property: .init(
+    name: PXiCalendar.PXAlarm.action.rawValue,
+    value: .text(PXiCalendar.AlarmAction.display.rawValue)
+))
+
+// Set trigger time (15 minutes before)
+alarm.add(property: .init(
+    name: PXiCalendar.PXAlarm.trigger.rawValue,
+    value: .duration(DateComponents(minute: -15))
+))
+
+// Add description
+alarm.add(property: .init(
+    name: PXiCalendar.PXAlarm.description.rawValue,
+    value: .text("Meeting starts in 15 minutes")
+))
+
+// Add the alarm to the event
+event.add(component: alarm)
+
+```
+
+### Finalizing the Calendar
+
+```swift
+// Add the event to the calendar
+calendar.add(component: event)
+
+// Generate iCalendar formatted string
+let iCalString = calendar.asiCalendarString()
+print(iCalString)
+
+```
+
+## Advanced Usage
+
+### Creating Events with Duration
+
+```swift
+// Set event duration instead of end time
+let durationComponents = DateComponents(hour: 1, minute: 30)
+event.add(property: .init(
+    name: PXiCalendar.PXEvent.duration.rawValue,
+    value: .duration(durationComponents)
+))
+
+```
+
+### Complex Recurrence Rules
+
+```swift
+// Monthly meeting on the first Monday of each month
+let recurrenceRule = PXiCalendar.RecurrenceRule(
+    recurrence: .monthly,
+    count: 12,  // For 12 months
+    byDay: [.monday],
+    bySetPos: [1]  // First occurrence
+)
+
+```
+
+### Creating Tasks (TODOs)
+
+```swift
+// Create a TODO component
+var todo = PXiCalendar.Component(type: .todo)
+todo.add(property: .init(
+    name: PXiCalendar.PXEvent.uid.rawValue,
+    value: .text(UUID().uuidString)
+))
+todo.add(property: .init(
+    name: PXiCalendar.PXEvent.dtstamp.rawValue,
+    value: .dateTime(Date())
+))
+todo.add(property: .init(
+    name: PXiCalendar.PXEvent.summary.rawValue,
+    value: .text("Complete project documentation")
+))
+
+// Add the TODO to calendar
+calendar.add(component: todo)
+
+```
+
+## Compatibility
+
+PXiCalendar generates standard iCalendar format files compatible with:
+
+- Apple Calendar
+- Google Calendar
+- Microsoft Outlook
+- Mozilla Thunderbird
+- And most other calendar applications that support the iCalendar (RFC 5545) standard
+
+## License
+PXiCalendar is available under the MIT license. See the LICENSE file for more info.
