@@ -1,0 +1,15 @@
+{
+  "originHash" : "720b3edfdf1458b91ef105a26fcce50859de911929b387eb73ff138be77bba26",
+  "pins" : [
+    {
+      "identity" : "pxicalendar",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pixohq/PXiCalendar",
+      "state" : {
+        "branch" : "main",
+        "revision" : "228acb0578d33cb9122c8705fa2a1bb4bad7f4ac"
+      }
+    }
+  ],
+  "version" : 3
+}
